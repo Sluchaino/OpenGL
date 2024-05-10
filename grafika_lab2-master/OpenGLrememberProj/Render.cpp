@@ -19,7 +19,7 @@
 #include <vector>
 #define P 3.14159
 double height = 1;
-double z = 1;
+double z = -0.5;
 std::vector<std::vector<double>> aaa1;
 std::vector<std::vector<double>> matrixRotate = {
 	{1,0,0},
@@ -227,21 +227,26 @@ void keyDownEvent(OpenGL *ogl, int key)
 	if (key == 'A')
 	{
 		AngelY += 0.01;
+		//glPushMatrix();
+		
+		//glPopMatrix();
 		/*matrixRotate = {
 			{cos(AngelY), 0 , sin(AngelY)},
 			{0, 1, 0},
 			{-sin(AngelY), 0 ,cos(AngelY)},
 		};*/
+		glPushMatrix();
+		glTranslated(10, 10, 10);
 		matrixRotate = {
   {cos(AngelY), 0, sin(AngelY)},
   {sin(AngelX) * sin(AngelY), cos(AngelX), -sin(AngelX) * cos(AngelY)},
   {-cos(AngelX) * sin(AngelY), sin(AngelX), cos(AngelX) * cos(AngelY)}
 		};
+		glPopMatrix();
 	}
 	if (key == 'D')
 	{
 		AngelY -= 0.01;
-		
 		/*matrixRotate = {
 			{cos(AngelY), 0 , sin(AngelY)},
 			{0, 1, 0},
@@ -418,7 +423,8 @@ void Plane(std::vector<std::vector<double>> aaa, double height)
 {
 	for (int i = 0; i < 2; i++)
 	{
-		
+		glTranslated(0, 0, 0);
+		glRotated(AngelY, 0, 1, 0);
 		glBegin(GL_POLYGON);
 		
 		if (i == 0)
@@ -430,6 +436,7 @@ void Plane(std::vector<std::vector<double>> aaa, double height)
 			
 		else
 		{
+			
 			glColor3d(1, 0.5, 0);
 			//glNormal3d(aaa[0][1] * aaa[1][2] - aaa[0][2] * aaa[1][1], aaa[0][2] * aaa[1][0] - aaa[0][0] * aaa[1][2], aaa[0][0] * aaa[1][1] - aaa[0][1] * aaa[1][0]);
 			//glNormal3d(0, 0, 1);
@@ -439,7 +446,7 @@ void Plane(std::vector<std::vector<double>> aaa, double height)
 		for (int z = 0; z < aaa.size(); z++)
 		{
 			std::vector<double> temp = MultiplyMatrices(matrixRotate, aaa[z]);
-			//aaa[z] = temp;
+			aaa1[z] = temp;
 			/*
 			double temp1[] = {
 				aaa[z][0] * cos(Angel) - aaa[z][2] * sin(Angel),
@@ -461,50 +468,57 @@ void Plane(std::vector<std::vector<double>> aaa, double height)
 		aaa[j][2] -= height;
 	}
 }
-//void Polygon(std::vector<double> v1, std::vector<double> v2, double height, double color[])
-//{
-//	glBegin(GL_POLYGON);
-//	glColor3d(color[0], color[1], color[2]);
-//	glNormal3d(v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2], v1[0] * v2[1] - v1[1] * v2[0]);
-//	double temp1[] = {
-//		v1[0] * cos(Angel + 90) - v1[1] * sin(Angel + 90),
-//		v1[0] * sin(Angel + 90) + v1[1] * cos(Angel + 90),
-//		v1[2]
-//	};
-//	double temp2[] = {
-//		v2[0] * cos(Angel + P/2) - v2[1] * sin(Angel + P / 2),
-//		v2[0] * sin(Angel + P / 2) + v2[1] * cos(Angel + P / 2),
-//		v2[2]
-//	};
-//	glVertex3dv(temp1);
-//	glVertex3dv(temp2);
-//
-//	v2[2] += height;
-//	v1[2] += height;
-//
-//	glVertex3dv(temp2);
-//	glVertex3dv(temp1);
-//
-//	v2[2] -= height;
-//	v1[2] -= height;
-//	glEnd();
-//}
+void Polygon(std::vector<double> v1, std::vector<double> v2, double height, double color[], std::vector<std::vector<double>> aaa)
+{
+	glBegin(GL_POLYGON);
+	glColor3d(color[0], color[1], color[2]);
+	glNormal3d(v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2], v1[0] * v2[1] - v1[1] * v2[0]);
+	std::vector<double> temp = MultiplyMatrices(matrixRotate, v1);
+	std::vector<double> temp1 = MultiplyMatrices(matrixRotate, v2);
+	/*double temp1[] = {
+		v1[0] * cos(AngelX) - v1[1] * sin(AngelX ),
+		v1[0] * sin(AngelX) + v1[1] * cos(AngelX),
+		v1[2]
+	};
+	double temp2[] = {
+		v2[0] * cos(AngelX) - v2[1] * sin(AngelX),
+		v2[0] * sin(AngelX) + v2[1] * cos(AngelX),
+		v2[2]
+	};*/
+	/*glVertex3dv(temp1);
+	glVertex3dv(temp2);*/
+	glVertex3d(temp[0],temp[1],temp[2]);
+	glVertex3d(temp1[0], temp1[1], temp1[2]);
 
-//void Bok(std::vector<std::vector<double>> aaa, double height)
-//{
-//	double color[] = { 1, 0, 0 };
-//	for (int j = 0; j < aaa.size() - 1; j++)
-//	{
-//		color[0] = 1;
-//		color[1] = 0;
-//		color[2] = 0;
-//		Polygon(aaa[j], aaa[j + 1], height, color);
-//	}
-//	color[0] = 1;
-//	color[1] = 0;
-//	color[2] = 0;
-//	Polygon(aaa[aaa.size() - 1], aaa[0], height, color);
-//}
+	v1[2] += height;
+	v2[2] += height;
+	std::vector<double> temp2 = MultiplyMatrices(matrixRotate, v1);
+	std::vector<double> temp3 = MultiplyMatrices(matrixRotate, v2);
+	/*glVertex3dv(temp2);
+	glVertex3dv(temp1);*/
+	glVertex3d(temp3[0], temp3[1], temp3[2]);
+	glVertex3d(temp2[0],temp2[1],temp2[2]);
+
+	v2[2] -= height;
+	v1[2] -= height;
+	glEnd();
+}
+
+void Bok(std::vector<std::vector<double>> aaa, double height)
+{
+	double color[] = { 1, 0, 0 };
+	for (int j = 0; j < aaa.size() - 1; j++)
+	{
+		color[0] = 1;
+		color[1] = 0;
+		color[2] = 0;
+		Polygon(aaa[j], aaa[j + 1], height, color,aaa);
+	}
+	color[0] = 1;
+	color[1] = 0;
+	color[2] = 0;
+	Polygon(aaa[aaa.size() - 1], aaa[0], height, color,aaa);
+}
 double OnCicle(std::vector<double> v1, double x, double y)
 {
 	return pow(v1[0] - x, 2) + pow(v1[1] - y, 2);
@@ -512,7 +526,7 @@ double OnCicle(std::vector<double> v1, double x, double y)
 void DrawPlane(std::vector<std::vector<double>> aaa, double height)
 {
 	Plane(aaa, height);
-	//Bok(aaa, height);
+	Bok(aaa, height);
 }
 
 void Render(OpenGL *ogl)

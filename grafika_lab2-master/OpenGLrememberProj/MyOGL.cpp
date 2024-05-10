@@ -103,7 +103,7 @@ void OpenGL::render()
 	mainLight->SetUpLight();
 
 	glEnable(GL_DEPTH_TEST);
-	DrawAxes();
+	//DrawAxes(); //отрисвка осей
 	//drawPlane();
 	glDisable(GL_LIGHTING);
 
