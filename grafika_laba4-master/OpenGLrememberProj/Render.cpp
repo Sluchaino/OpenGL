@@ -28,7 +28,7 @@ bool textureMode = true;
 bool lightMode = true;
 bool upMove = false;
 double beginSpeed = 2;
-ObjFile Plane(93, beginSpeed), Car(2, 6,2.2,0.9,-0.9,0.2), Car1(2,5.9 - 70,1.9 - 70, 1 , -1, beginSpeed,75), Plane1(93, beginSpeed), Plane2(465, beginSpeed), Plane3(465, beginSpeed), Sky;
+ObjFile Plane(93, beginSpeed), Car(3, 6,2.2,0.9,-0.9,0.2), Car1(3,5.9 - 70,1.9 - 70, 1 , -1, beginSpeed,75), Plane1(93, beginSpeed), Plane2(465, beginSpeed), Plane3(465, beginSpeed), Sky;
 
 Texture CarTex, PlaneTex, Car1Tex, Plane1Tex, Car2Tex, Plane2Tex, Plane3Tex, SkyTex;
 
@@ -609,6 +609,8 @@ void Render(OpenGL *ogl)
 		Car1.Move = beginSpeed;
 		Car1.nowPos = 0;
 		Car1.col = 0;
+		Car.Povorot = false;
+		Car.MoveRightLeftNow = 0;
 		Car1.Car1();
 		upMove = false;
 

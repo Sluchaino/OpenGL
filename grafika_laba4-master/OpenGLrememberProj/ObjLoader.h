@@ -62,9 +62,16 @@ struct ObjFile
 	double maxZ;
 	double minX;
 	double minZ;
+	double MoveRightLeft = 0.2;
+	double MoveRightLeftNow = 0;
+	bool Povorot = false;
+	double RightLeft = 0;
 	ObjFile()
 	{
-
+		Now = 0;
+		nowPos = 0;
+		col = 0;
+		MoveRightLeftNow = 0;
 	}
 	ObjFile(double maxPos, double move)
 	{
@@ -73,6 +80,7 @@ struct ObjFile
 		Now = 0;
 		nowPos = 0;
 		col = 0;
+		MoveRightLeftNow = 0;
 	}
 	ObjFile(double limit, double MaxX, double MinX, double MaxZ, double MinZ, double move)
 	{
@@ -85,6 +93,7 @@ struct ObjFile
 		maxZ = MaxZ;
 		minZ = MinZ;
 		Move = move;
+		MoveRightLeftNow = 0;
 	}
 	ObjFile(double limit, double MaxX, double MinX, double MaxZ, double MinZ, double move, double MaxPos)
 	{
@@ -98,6 +107,7 @@ struct ObjFile
 		minZ = MinZ;
 		Move = move;
 		maxPos = MaxPos;
+		MoveRightLeftNow = 0;
 	}
 	~ObjFile()
 	{
@@ -117,6 +127,27 @@ struct ObjFile
 
 		// Генерируем случайное число
 		double random_number = distribution(gen);
+		Now = random_number;
+		maxZ -= Now;
+		minZ -= Now;
+	}
+	inline void MoveRighrLeft()
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+
+		// Определяем диапазон случайных чисел
+		int min_value = 0;
+		int max_value = 10;
+		std::uniform_int_distribution<> distribution(min_value, max_value);
+
+		// Генерируем случайное число
+		double random_number = distribution(gen);
+		if (random_number <= 4 && Povorot == false)
+		{
+			Povorot = true;
+		}
+		
 		Now = random_number;
 		maxZ -= Now;
 		minZ -= Now;
@@ -187,16 +218,65 @@ struct ObjFile
 		nowPos += Move;
 		maxX += Move;
 		minX += Move;
+		std::random_device rd;
+		std::mt19937 gen(rd());
 
+		// Определяем диапазон случайных чисел
+		int min_value = 0;
+		int max_value = 10;
+		std::uniform_int_distribution<> distribution(min_value, max_value);
+
+		// Генерируем случайное число
+		double random_number = distribution(gen);
+		double min = -1;
+		double max = 1;
+		
+		if (random_number <= 4 && Povorot == false && nowPos >= 20 && nowPos <= 40)
+		{
+			Povorot = true;
+			if (Now + min > -Limit && Now + max < Limit)
+			{
+				random_number = distribution(gen);
+				if (random_number < 5)
+					RightLeft = min;
+				else
+					RightLeft = max;
+			}
+			else if (Now + min > -Limit)
+			{
+				RightLeft = min;
+			}
+			else
+			{
+				RightLeft = max;
+			}
+		}
+		if (Povorot == true)
+		{
+			MoveRightLeftNow += MoveRightLeft * RightLeft;
+			Now += MoveRightLeftNow;
+			maxZ -= MoveRightLeftNow;
+			minZ -= MoveRightLeftNow;
+			if (MoveRightLeftNow >= max || MoveRightLeftNow <= min)
+			{
+				Now -= MoveRightLeftNow;
+				maxZ += MoveRightLeftNow;
+				minZ += MoveRightLeftNow;
+				MoveRightLeftNow = 0; 
+				Povorot = false;
+			}
+		}
 		if (nowPos >= maxPos)
 		{
 			maxX -= nowPos;
 			minX -= nowPos;
 			maxZ += Now;
 			minZ += Now;
+			MoveRightLeftNow = 0;
 			Car1();
 			nowPos = 0;
 			++col;
+			Povorot = false;
 			if (col % 3 == 0 && col <= 27)
 				Move += 0.1;
 			return true;
